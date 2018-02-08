@@ -22,3 +22,7 @@ class TransactionHandler(plugin.Plugin):
     def handle_request(cls, chain, **params):
         with transaction.manager:
             return chain.next(**params)
+
+    @staticmethod
+    def handle_interactive():
+        return {'transaction': transaction.manager}
