@@ -16,7 +16,7 @@ from nagare.services import plugin
 
 
 class TransactionHandler(plugin.Plugin):
-    LOAD_PRIORITY = 20
+    LOAD_PRIORITY = 50
 
     @classmethod
     def handle_request(cls, chain, **params):
