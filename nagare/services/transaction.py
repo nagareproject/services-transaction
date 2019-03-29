@@ -11,18 +11,32 @@
 
 from __future__ import absolute_import
 
-import transaction
+from transaction import interfaces
+from transaction import manager, begin, commit, abort, doom, isDoomed  # noqa: F401
+
 from nagare.services import plugin
 
 
 class TransactionHandler(plugin.Plugin):
     LOAD_PRIORITY = 50
+    CONFIG_SPEC = dict(plugin.Plugin.CONFIG_SPEC, retries='integer(default=3)')
 
-    @classmethod
-    def handle_request(cls, chain, **params):
-        with transaction.manager:
-            return chain.next(**params)
+    def __init__(self, name, dist, retries, services_service, **config):
+        services_service(super(TransactionHandler, self).__init__, name, dist, **config)
+        self.retries = retries
+
+    def handle_request(self, chain, **params):
+        r = None
+
+        try:
+            for attempt in manager.attempts(self.retries):
+                with attempt:
+                    r = chain.next(**params)
+        except interfaces.DoomedTransaction:
+            abort()
+
+        return r
 
     @staticmethod
     def handle_interactive():
-        return {'transaction': transaction.manager}
+        return {'transaction': manager}
