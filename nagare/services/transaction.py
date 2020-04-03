@@ -1,7 +1,7 @@
 # Encoding: utf-8
 
 # --
-# Copyright (c) 2008-2019 Net-ng.
+# Copyright (c) 2008-2020 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
@@ -18,11 +18,15 @@ from nagare.services import plugin
 
 
 class TransactionHandler(plugin.Plugin):
-    LOAD_PRIORITY = 50
+    LOAD_PRIORITY = 22
     CONFIG_SPEC = dict(plugin.Plugin.CONFIG_SPEC, retries='integer(default=3)')
 
     def __init__(self, name, dist, retries, services_service, **config):
-        services_service(super(TransactionHandler, self).__init__, name, dist, **config)
+        services_service(
+            super(TransactionHandler, self).__init__, name, dist,
+            retries=retries,
+            **config
+        )
         self.retries = retries
 
     def handle_request(self, chain, **params):
