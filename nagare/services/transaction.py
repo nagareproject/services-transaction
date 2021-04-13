@@ -11,7 +11,7 @@
 
 from __future__ import absolute_import
 
-from transaction import interfaces
+from transaction import interfaces, _transaction
 from transaction import manager, begin, commit, abort, doom, isDoomed  # noqa: F401
 
 from nagare.services import plugin
@@ -28,6 +28,7 @@ class TransactionHandler(plugin.Plugin):
             **config
         )
         self.retries = retries
+        _transaction._LOGGER = self.logger
 
     def handle_request(self, chain, **params):
         r = None
