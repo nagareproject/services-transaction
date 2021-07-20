@@ -43,5 +43,5 @@ class TransactionHandler(plugin.Plugin):
         return r
 
     @staticmethod
-    def handle_interactive():
+    def handle_interaction():
         return {'transaction': manager}
