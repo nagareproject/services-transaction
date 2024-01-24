@@ -1,2 +1,2 @@
 [nagare.services]
-transaction = nagare.services.transaction:TransactionHandler
+transaction = nagare.services.transaction:Transaction

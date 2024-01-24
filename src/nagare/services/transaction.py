@@ -1,7 +1,7 @@
 # Encoding: utf-8
 
 # --
-# Copyright (c) 2008-2023 Net-ng.
+# Copyright (c) 2008-2024 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
@@ -11,16 +11,17 @@
 
 from __future__ import absolute_import
 
+from transaction import doom, abort, begin, commit, manager, isDoomed, interfaces, _transaction  # noqa: F401
+
 from nagare.services import plugin
-from transaction import _transaction, abort, begin, commit, doom, interfaces, isDoomed, manager  # noqa: F401
 
 
-class TransactionHandler(plugin.Plugin):
+class Transaction(plugin.Plugin):
     LOAD_PRIORITY = 22
     CONFIG_SPEC = dict(plugin.Plugin.CONFIG_SPEC, retries='integer(default=3)')
 
     def __init__(self, name, dist, retries, services_service, **config):
-        services_service(super(TransactionHandler, self).__init__, name, dist, retries=retries, **config)
+        services_service(super(Transaction, self).__init__, name, dist, retries=retries, **config)
         self.retries = retries
         _transaction._LOGGER = self.logger
 
