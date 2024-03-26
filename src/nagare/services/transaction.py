@@ -17,7 +17,7 @@ from nagare.services import plugin
 
 
 class Transaction(plugin.Plugin):
-    LOAD_PRIORITY = 22
+    LOAD_PRIORITY = 103  # After state service
     CONFIG_SPEC = dict(plugin.Plugin.CONFIG_SPEC, retries='integer(default=3)')
 
     def __init__(self, name, dist, retries, services_service, **config):
