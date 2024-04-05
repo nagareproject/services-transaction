@@ -9,8 +9,6 @@
 # this distribution.
 # --
 
-from __future__ import absolute_import
-
 from transaction import doom, abort, begin, commit, manager, isDoomed, interfaces, _transaction  # noqa: F401
 
 from nagare.services import plugin
@@ -18,24 +16,23 @@ from nagare.services import plugin
 
 class Transaction(plugin.Plugin):
     LOAD_PRIORITY = 103  # After state service
-    CONFIG_SPEC = dict(plugin.Plugin.CONFIG_SPEC, retries='integer(default=3)')
 
-    def __init__(self, name, dist, retries, services_service, **config):
-        services_service(super(Transaction, self).__init__, name, dist, retries=retries, **config)
-        self.retries = retries
+    def __init__(self, name, dist, services_service, **config):
+        services_service(super(Transaction, self).__init__, name, dist, **config)
         _transaction._LOGGER = self.logger
 
     def handle_request(self, chain, **params):
-        r = None
-
         try:
-            for attempt in manager.attempts(self.retries):
-                with attempt:
-                    r = chain.next(**params)
-        except interfaces.DoomedTransaction:
-            abort()
+            r = chain.next(**params)
+            commit()
+            return r
+        except Exception as exc:
+            if getattr(exc, 'commit_transaction', False):
+                commit()
+            else:
+                abort()
 
-        return r
+            raise
 
     @staticmethod
     def handle_interaction():
