@@ -17,8 +17,9 @@ from nagare.services import plugin
 class Transaction(plugin.Plugin):
     LOAD_PRIORITY = 103  # After state service
 
-    def __init__(self, name, dist, services_service, **config):
+    def __init__(self, name, dist, exceptions_service, services_service, **config):
         services_service(super(Transaction, self).__init__, name, dist, **config)
+        self.exceptions_service = exceptions_service
         _transaction._LOGGER = self.logger
 
     def handle_request(self, chain, **params):
@@ -27,7 +28,7 @@ class Transaction(plugin.Plugin):
             commit()
             return r
         except Exception as exc:
-            if getattr(exc, 'commit_transaction', False):
+            if getattr(exc, 'commit_transaction', self.exceptions_service.must_commit(exc)):
                 commit()
             else:
                 abort()
