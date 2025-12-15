@@ -1,7 +1,5 @@
-# Encoding: utf-8
-
 # --
-# Copyright (c) 2008-2024 Net-ng.
+# Copyright (c) 2014-2025 Net-ng.
 # All rights reserved.
 #
 # This software is licensed under the BSD License, as described in
@@ -18,7 +16,7 @@ class Transaction(plugin.Plugin):
     LOAD_PRIORITY = 103  # After state service
 
     def __init__(self, name, dist, exceptions_service, services_service, **config):
-        services_service(super(Transaction, self).__init__, name, dist, **config)
+        services_service(super().__init__, name, dist, **config)
         self.exceptions_service = exceptions_service
         _transaction._LOGGER = self.logger
 
